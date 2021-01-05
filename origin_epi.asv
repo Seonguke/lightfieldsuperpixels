@@ -1,0 +1,65 @@
+% 
+% colors = rand( 2000, 3);
+% addpath('./prop', './lines', './seg', './util','./cotton2');%검색폴더 경로 추가
+% %D = '/home/jo/lightfieldsuperpixels/data/buddha.h5'
+% D='resize.h5'
+% LF = HCIloadLF( D, 'X');
+% LFu=squeeze(LF(:,:,:,:,5));
+% for i = 1:size(LFu, 4)% 9
+%   LFu(:, :, :, i) = imgaussfilt( squeeze(LFu(:, :, :, i)), 0.85);    
+% end
+% LFu = permute(LFu, [4 2 3 1]);
+% 
+% LFv=squeeze(LF(:,:,:,5,:));
+% LFv = permute(LFv, [2 1 3 4]);
+%  for i = 1:size(LFv, 4) 
+%     LFv(:, :, :, i) = imgaussfilt( squeeze(LFv(:, :, :, i)), 0.85);
+%   end
+%  LFv = permute(LFv, [2 4 3 1]);
+%  size (LFv)
+% for i=1:768
+%     
+%      rsz=imresize(LFu(:,:,:,i),[90 768]);
+%      imshow(rsz)
+%      i
+%      waitforbuttonpress;
+% end
+uu=load('look.mat');
+vv=load('lv.mat');
+Su=uu.Su;
+S=Su
+epiSz=[9,768,768];
+  h = epiSz(1);
+  w = epiSz(2);
+segs = S{51};
+d = zeros(h, w);
+  for j = 51
+    
+    
+
+    % The disparity of a segment is taken as the minimum of the slope
+    % of the two bounding lines. This corresponds to assigning the segment
+    % the farther depth of two options.
+    z = min(segs(:, 2) - segs(:, 1), segs(:, 4) - segs(:, 3));%1 빼고 MIN찾아 
+
+    % Sort segs by z-order
+    [cxz,zxc] = sortrows(z);%Z -부터 정렬
+    [~, o] = sortrows(round(z));%Z -부터 정렬
+    z = z(o);%정렬순서대로 딱서
+    z = z ./ epiSz(1);
+    segs = segs(o, :);%너도 disparity순서대로 딱
+
+    % Draw a parallelogram with the segment's disparity value into d
+    for i = 1:size(segs, 1)
+      l = segs(i, 1);
+      r = segs(i, 3);
+      dl = (segs(i, 2) - l)/ (h - 1);
+      dr = (segs(i, 4) - r)/ (h - 1);
+      for k = 1:h
+        d(k, min(max(1, round(l + dl * (k - 1) ) : round(r + dr * (k - 1))), w)) = z(i);
+      end
+    end  
+
+    D(:, :, j) = d;
+
+  end

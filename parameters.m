@@ -21,6 +21,7 @@ classdef parameters
 
      % The maximum absolute disparity between two adjacent light field views
      maxAbsDisparity = 1.66; 
+     %maxAbsDisparity = 2.66; 
      
      % The different superpixel sizes to run the algorithm for
      szSuperpixels = [20];

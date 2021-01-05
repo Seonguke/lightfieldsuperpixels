@@ -3,8 +3,9 @@
 %% saving results to file. 
 %%
 function runOnLightfields ( D )
-  addpath('./prop', './lines', './seg', './util');
-  if isempty(D{1})
+  
+  addpath('./prop', './lines', './seg', './util');%검색폴더 경로 추가
+  if isempty(D{1})%'/home/jo/lightfieldsuperpixels/cotton.h5'
     disp('Error! No input file specified. Please see README.md for help.');
     return;
   end
@@ -32,14 +33,14 @@ function runOnLightfields ( D )
     end
   end
 
-  % Run parameters
-  % Change these to evaluate the output with different settings for different 
-  % light fields
+  %Run parameters
+  %Change these to evaluate the output with different settings for different 
+  %light fields
   param = parameters;
 
   % Initialize Matlab's parpool
   cluster = parcluster('local');
-  cluster.NumWorkers = param.nWorkers;
+  cluster.NumWorkers = param.nWorkers;%병렬처리
   saveProfile(cluster);
   
   delete(gcp('nocreate'));
@@ -49,16 +50,16 @@ function runOnLightfields ( D )
   for i = 1:length(D)
 
     % Load the lightfield images
-    LF = loadLF( D{i}, param.uCamMovingRight, param.vCamMovingRight, 'lab');
+    %LF = loadLF( D{i}, param.uCamMovingRight, param.vCamMovingRight, 'X');
 
     % Uncomment the following line if you would like to use the utility function for 
     % reading the .H5 files of the old HCI dataset.
-    %LF = HCIloadLF( D{i}, 'lab');
+    LF = HCIloadLF( D{i}, 'lab');
 
     if isempty(LF)
       return;
     end
-
+    
     VCLFS( LF, [folder '/' fout{i}], param); 
   end
 end
